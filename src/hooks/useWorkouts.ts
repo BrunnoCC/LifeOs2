@@ -9,43 +9,57 @@ export function useWorkouts() {
   const [logs, setLogs] = useState<WorkoutLog[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchAll = useCallback(() => {
-    if (!user) { setWorkouts([]); setLogs([]); setLoading(false); return; }
-    setWorkouts(workoutService.getWorkouts(user.id));
-    setLogs(workoutService.getLogs(user.id));
-    setLoading(false);
+  const fetchAll = useCallback(async () => {
+    if (!user) {
+      setWorkouts([]);
+      setLogs([]);
+      setLoading(false);
+      return;
+    }
+    try {
+      const userWorkouts = await workoutService.getWorkouts(user.id);
+      const userLogs = await workoutService.getLogs(user.id);
+      setWorkouts(userWorkouts);
+      setLogs(userLogs);
+    } catch (err) {
+      console.error('Failed to fetch workouts:', err);
+    } finally {
+      setLoading(false);
+    }
   }, [user]);
 
-  useEffect(() => { fetchAll(); }, [fetchAll]);
-
-  const createWorkout = (data: Omit<Workout, 'id' | 'created_at' | 'user_id'>) => {
-    if (!user) return null;
-    const w = workoutService.createWorkout({ ...data, user_id: user.id });
+  useEffect(() => {
     fetchAll();
+  }, [fetchAll]);
+
+  const createWorkout = async (data: Omit<Workout, 'id' | 'created_at' | 'user_id'>) => {
+    if (!user) return null;
+    const w = await workoutService.createWorkout({ ...data, user_id: user.id });
+    await fetchAll();
     return w;
   };
 
-  const updateWorkout = (id: string, updates: Partial<Workout>) => {
-    const w = workoutService.updateWorkout(id, updates);
-    fetchAll();
+  const updateWorkout = async (id: string, updates: Partial<Workout>) => {
+    const w = await workoutService.updateWorkout(id, updates);
+    await fetchAll();
     return w;
   };
 
-  const deleteWorkout = (id: string) => {
-    workoutService.deleteWorkout(id);
-    fetchAll();
+  const deleteWorkout = async (id: string) => {
+    await workoutService.deleteWorkout(id);
+    await fetchAll();
   };
 
-  const logWorkout = (data: Omit<WorkoutLog, 'id' | 'created_at' | 'user_id'>) => {
+  const logWorkout = async (data: Omit<WorkoutLog, 'id' | 'created_at' | 'user_id'>) => {
     if (!user) return null;
-    const log = workoutService.createLog({ ...data, user_id: user.id });
-    fetchAll();
+    const log = await workoutService.createLog({ ...data, user_id: user.id });
+    await fetchAll();
     return log;
   };
 
-  const deleteLog = (id: string) => {
-    workoutService.deleteLog(id);
-    fetchAll();
+  const deleteLog = async (id: string) => {
+    await workoutService.deleteLog(id);
+    await fetchAll();
   };
 
   return {

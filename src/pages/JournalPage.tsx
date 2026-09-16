@@ -11,8 +11,6 @@ import {
   Save,
   Clock,
   Smile,
-  Meh,
-  Frown,
   TrendingUp,
   Edit3,
   Search,
@@ -296,14 +294,14 @@ export const JournalPage: React.FC = () => {
     setView('editor');
   };
 
-  const handleSave = (data: Parameters<typeof saveEntry>[0]) => {
-    const saved = saveEntry(data);
+  const handleSave = async (data: Parameters<typeof saveEntry>[0]) => {
+    const saved = await saveEntry(data);
     if (saved) setSelectedEntry(saved);
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (window.confirm('Excluir esta entrada do diário?')) {
-      deleteEntry(id);
+      await deleteEntry(id);
       setView('list');
     }
   };

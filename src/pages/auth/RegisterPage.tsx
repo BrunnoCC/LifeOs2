@@ -12,16 +12,25 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onSwitchToLogin }) =
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!fullName || !email || !password) {
       setError('Preencha todos os campos.');
       return;
     }
-    const res = register(email, password, fullName);
-    if (res.error) {
-      setError(res.error);
+    setSubmitting(true);
+    setError(null);
+    try {
+      const res = await register(email, password, fullName);
+      if (res.error) {
+        setError(res.error);
+      }
+    } catch (err: any) {
+      setError(err.message || 'Erro ao realizar cadastro.');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -81,9 +90,10 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onSwitchToLogin }) =
 
         <button
           type="submit"
-          className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/20 transition-all active:scale-98"
+          disabled={submitting}
+          className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/20 transition-all active:scale-98 disabled:opacity-50"
         >
-          <span>Criar Conta e Começar</span>
+          <span>{submitting ? 'Cadastrando...' : 'Criar Conta e Começar'}</span>
           <ArrowRight className="w-4 h-4" />
         </button>
       </form>

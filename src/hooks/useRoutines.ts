@@ -9,53 +9,58 @@ export function useRoutines(selectedDate: string = new Date().toISOString().spli
   const [routineLogs, setRoutineLogs] = useState<RoutineLog[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchRoutinesData = useCallback(() => {
+  const fetchRoutinesData = useCallback(async () => {
     if (!user) {
       setRoutines([]);
       setRoutineLogs([]);
       setLoading(false);
       return;
     }
-    const userRoutines = routineService.getRoutines(user.id);
-    const logs = routineService.getRoutineLogsForDate(user.id, selectedDate);
-    setRoutines(userRoutines);
-    setRoutineLogs(logs);
-    setLoading(false);
+    try {
+      const userRoutines = await routineService.getRoutines(user.id);
+      const logs = await routineService.getRoutineLogsForDate(user.id, selectedDate);
+      setRoutines(userRoutines);
+      setRoutineLogs(logs);
+    } catch (err) {
+      console.error('Failed to fetch routines:', err);
+    } finally {
+      setLoading(false);
+    }
   }, [user, selectedDate]);
 
   useEffect(() => {
     fetchRoutinesData();
   }, [fetchRoutinesData]);
 
-  const createRoutine = (routineData: Omit<Routine, 'id' | 'created_at' | 'user_id'>) => {
+  const createRoutine = async (routineData: Omit<Routine, 'id' | 'created_at' | 'user_id'>) => {
     if (!user) return null;
-    const routine = routineService.createRoutine({ ...routineData, user_id: user.id });
-    fetchRoutinesData();
+    const routine = await routineService.createRoutine({ ...routineData, user_id: user.id });
+    await fetchRoutinesData();
     return routine;
   };
 
-  const deleteRoutine = (routineId: string) => {
-    const success = routineService.deleteRoutine(routineId);
-    fetchRoutinesData();
+  const deleteRoutine = async (routineId: string) => {
+    const success = await routineService.deleteRoutine(routineId);
+    await fetchRoutinesData();
     return success;
   };
 
-  const addRoutineItem = (routineId: string, itemData: Omit<RoutineItem, 'id' | 'routine_id'>) => {
-    const item = routineService.addRoutineItem(routineId, itemData);
-    fetchRoutinesData();
+  const addRoutineItem = async (routineId: string, itemData: Omit<RoutineItem, 'id' | 'routine_id'>) => {
+    const item = await routineService.addRoutineItem(routineId, itemData);
+    await fetchRoutinesData();
     return item;
   };
 
-  const deleteRoutineItem = (routineId: string, itemId: string) => {
-    const success = routineService.deleteRoutineItem(routineId, itemId);
-    fetchRoutinesData();
+  const deleteRoutineItem = async (routineId: string, itemId: string) => {
+    const success = await routineService.deleteRoutineItem(routineId, itemId);
+    await fetchRoutinesData();
     return success;
   };
 
-  const toggleItemLog = (routineItemId: string) => {
+  const toggleItemLog = async (routineItemId: string) => {
     if (!user) return;
-    routineService.toggleRoutineItemLog(user.id, routineItemId, selectedDate);
-    fetchRoutinesData();
+    await routineService.toggleRoutineItemLog(user.id, routineItemId, selectedDate);
+    await fetchRoutinesData();
   };
 
   return {

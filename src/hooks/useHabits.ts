@@ -8,48 +8,53 @@ export function useHabits() {
   const [habitsWithStats, setHabitsWithStats] = useState<HabitWithStats[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchHabitsData = useCallback(() => {
+  const fetchHabitsData = useCallback(async () => {
     if (!user) {
       setHabitsWithStats([]);
       setLoading(false);
       return;
     }
-    const habits = habitService.getHabits(user.id);
-    const logs = habitService.getHabitLogs(user.id);
+    try {
+      const habits = await habitService.getHabits(user.id);
+      const logs = await habitService.getHabitLogs(user.id);
 
-    const stats = habits.map(habit => habitService.getHabitWithStats(habit, logs));
-    setHabitsWithStats(stats);
-    setLoading(false);
+      const stats = habits.map(habit => habitService.getHabitWithStats(habit, logs));
+      setHabitsWithStats(stats);
+    } catch (err) {
+      console.error('Failed to fetch habits data:', err);
+    } finally {
+      setLoading(false);
+    }
   }, [user]);
 
   useEffect(() => {
     fetchHabitsData();
   }, [fetchHabitsData]);
 
-  const createHabit = (habitData: Omit<Habit, 'id' | 'created_at' | 'user_id'>) => {
+  const createHabit = async (habitData: Omit<Habit, 'id' | 'created_at' | 'user_id'>) => {
     if (!user) return null;
-    const habit = habitService.createHabit({ ...habitData, user_id: user.id });
-    fetchHabitsData();
+    const habit = await habitService.createHabit({ ...habitData, user_id: user.id });
+    await fetchHabitsData();
     return habit;
   };
 
-  const deleteHabit = (habitId: string) => {
-    const success = habitService.deleteHabit(habitId);
-    fetchHabitsData();
+  const deleteHabit = async (habitId: string) => {
+    const success = await habitService.deleteHabit(habitId);
+    await fetchHabitsData();
     return success;
   };
 
-  const toggleHabitToday = (habitId: string, targetValue?: number) => {
+  const toggleHabitToday = async (habitId: string, targetValue?: number) => {
     if (!user) return;
     const today = new Date().toISOString().split('T')[0];
-    habitService.toggleHabitLog(user.id, habitId, today, targetValue);
-    fetchHabitsData();
+    await habitService.toggleHabitLog(user.id, habitId, today, targetValue);
+    await fetchHabitsData();
   };
 
-  const toggleHabitForDate = (habitId: string, date: string, targetValue?: number) => {
+  const toggleHabitForDate = async (habitId: string, date: string, targetValue?: number) => {
     if (!user) return;
-    habitService.toggleHabitLog(user.id, habitId, date, targetValue);
-    fetchHabitsData();
+    await habitService.toggleHabitLog(user.id, habitId, date, targetValue);
+    await fetchHabitsData();
   };
 
   return {

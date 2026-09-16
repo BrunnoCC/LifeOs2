@@ -9,47 +9,52 @@ export function useStudies() {
   const [sessions, setSessions] = useState<StudySession[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchStudiesData = useCallback(() => {
+  const fetchStudiesData = useCallback(async () => {
     if (!user) {
       setSubjects([]);
       setSessions([]);
       setLoading(false);
       return;
     }
-    const userSubjects = studyService.getSubjects(user.id);
-    const userSessions = studyService.getSessions(user.id);
-    setSubjects(userSubjects);
-    setSessions(userSessions);
-    setLoading(false);
+    try {
+      const userSubjects = await studyService.getSubjects(user.id);
+      const userSessions = await studyService.getSessions(user.id);
+      setSubjects(userSubjects);
+      setSessions(userSessions);
+    } catch (err) {
+      console.error('Failed to fetch studies data:', err);
+    } finally {
+      setLoading(false);
+    }
   }, [user]);
 
   useEffect(() => {
     fetchStudiesData();
   }, [fetchStudiesData]);
 
-  const createSubject = (data: Omit<StudySubject, 'id' | 'created_at' | 'user_id'>) => {
+  const createSubject = async (data: Omit<StudySubject, 'id' | 'created_at' | 'user_id'>) => {
     if (!user) return null;
-    const subj = studyService.createSubject({ ...data, user_id: user.id });
-    fetchStudiesData();
+    const subj = await studyService.createSubject({ ...data, user_id: user.id });
+    await fetchStudiesData();
     return subj;
   };
 
-  const deleteSubject = (id: string) => {
-    const res = studyService.deleteSubject(id);
-    fetchStudiesData();
+  const deleteSubject = async (id: string) => {
+    const res = await studyService.deleteSubject(id);
+    await fetchStudiesData();
     return res;
   };
 
-  const createSession = (data: Omit<StudySession, 'id' | 'created_at' | 'user_id'>) => {
+  const createSession = async (data: Omit<StudySession, 'id' | 'created_at' | 'user_id'>) => {
     if (!user) return null;
-    const sess = studyService.createSession({ ...data, user_id: user.id });
-    fetchStudiesData();
+    const sess = await studyService.createSession({ ...data, user_id: user.id });
+    await fetchStudiesData();
     return sess;
   };
 
-  const deleteSession = (id: string) => {
-    const res = studyService.deleteSession(id);
-    fetchStudiesData();
+  const deleteSession = async (id: string) => {
+    const res = await studyService.deleteSession(id);
+    await fetchStudiesData();
     return res;
   };
 

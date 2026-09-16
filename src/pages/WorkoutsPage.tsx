@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
   Dumbbell, Plus, Trash2, Edit3, X, Play,
-  ChevronRight, Clock, Flame, TrendingUp, Calendar,
+  Clock, TrendingUp, Calendar,
   BarChart2, CheckCircle2, Minus,
 } from 'lucide-react';
 import { useWorkouts } from '../hooks/useWorkouts';

@@ -8,10 +8,8 @@ import {
   ChevronDown,
   CheckCircle2,
   Clock,
-  AlertCircle,
   X,
   TrendingUp,
-  Calendar,
   Award,
   Flame,
 } from 'lucide-react';

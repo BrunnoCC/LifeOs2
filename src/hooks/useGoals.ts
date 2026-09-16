@@ -8,45 +8,50 @@ export function useGoals() {
   const [goals, setGoals] = useState<Goal[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchGoals = useCallback(() => {
+  const fetchGoals = useCallback(async () => {
     if (!user) {
       setGoals([]);
       setLoading(false);
       return;
     }
-    const userGoals = goalService.getGoals(user.id);
-    setGoals(userGoals);
-    setLoading(false);
+    try {
+      const userGoals = await goalService.getGoals(user.id);
+      setGoals(userGoals);
+    } catch (err) {
+      console.error('Failed to fetch goals:', err);
+    } finally {
+      setLoading(false);
+    }
   }, [user]);
 
   useEffect(() => {
     fetchGoals();
   }, [fetchGoals]);
 
-  const createGoal = (data: Omit<Goal, 'id' | 'created_at' | 'user_id'>) => {
+  const createGoal = async (data: Omit<Goal, 'id' | 'created_at' | 'user_id'>) => {
     if (!user) return null;
-    const goal = goalService.createGoal({ ...data, user_id: user.id });
-    fetchGoals();
+    const goal = await goalService.createGoal({ ...data, user_id: user.id });
+    await fetchGoals();
     return goal;
   };
 
-  const updateGoal = (id: string, updates: Partial<Goal>) => {
-    const updated = goalService.updateGoal(id, updates);
-    fetchGoals();
+  const updateGoal = async (id: string, updates: Partial<Goal>) => {
+    const updated = await goalService.updateGoal(id, updates);
+    await fetchGoals();
     return updated;
   };
 
-  const deleteGoal = (id: string) => {
-    const res = goalService.deleteGoal(id);
-    fetchGoals();
+  const deleteGoal = async (id: string) => {
+    const res = await goalService.deleteGoal(id);
+    await fetchGoals();
     return res;
   };
 
-  const incrementGoal = (id: string, amount: number = 1) => {
+  const incrementGoal = async (id: string, amount: number = 1) => {
     const goal = goals.find(g => g.id === id);
     if (!goal) return;
     const newCurrent = Math.max(0, goal.current_value + amount);
-    updateGoal(id, { current_value: newCurrent });
+    await updateGoal(id, { current_value: newCurrent, target_value: goal.target_value });
   };
 
   return {

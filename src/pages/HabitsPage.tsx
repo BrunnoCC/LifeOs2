@@ -6,7 +6,6 @@ import {
   Plus, 
   CheckCircle2, 
   Trash2, 
-  Calendar as CalendarIcon,
   X 
 } from 'lucide-react';
 

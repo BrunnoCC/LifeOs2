@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
 import { useStudies } from '../hooks/useStudies';
-import type { StudySubject } from '../types';
 import { 
   BookOpen, 
   Plus, 
   Clock, 
   HelpCircle, 
-  CheckCircle2, 
   Trash2, 
   Award,
   X 
@@ -18,7 +16,6 @@ export const StudiesPage: React.FC = () => {
     sessions, 
     totalMinutes, 
     totalQuestions, 
-    totalCorrect, 
     accuracyRate, 
     createSubject, 
     deleteSubject, 

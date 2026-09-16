@@ -4,6 +4,7 @@ import { useAuthContext } from '../../context/AuthContext';
 
 interface HeaderProps {
   onOpenQuickAdd?: () => void;
+  onSearchClick?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({ onOpenQuickAdd }) => {

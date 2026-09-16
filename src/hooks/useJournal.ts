@@ -8,15 +8,27 @@ export function useJournal() {
   const [entries, setEntries] = useState<JournalEntry[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchEntries = useCallback(() => {
-    if (!user) { setEntries([]); setLoading(false); return; }
-    setEntries(journalService.getEntries(user.id));
-    setLoading(false);
+  const fetchEntries = useCallback(async () => {
+    if (!user) {
+      setEntries([]);
+      setLoading(false);
+      return;
+    }
+    try {
+      const userEntries = await journalService.getEntries(user.id);
+      setEntries(userEntries);
+    } catch (err) {
+      console.error('Failed to fetch journal entries:', err);
+    } finally {
+      setLoading(false);
+    }
   }, [user]);
 
-  useEffect(() => { fetchEntries(); }, [fetchEntries]);
+  useEffect(() => {
+    fetchEntries();
+  }, [fetchEntries]);
 
-  const saveEntry = (data: {
+  const saveEntry = async (data: {
     date: string;
     title?: string;
     content: string;
@@ -24,19 +36,19 @@ export function useJournal() {
     tags: string[];
   }) => {
     if (!user) return null;
-    const entry = journalService.saveOrUpdate(user.id, data);
-    fetchEntries();
+    const entry = await journalService.saveOrUpdate(user.id, data);
+    await fetchEntries();
     return entry;
   };
 
-  const deleteEntry = (id: string) => {
-    journalService.deleteEntry(id);
-    fetchEntries();
+  const deleteEntry = async (id: string) => {
+    await journalService.deleteEntry(id);
+    await fetchEntries();
   };
 
   const getEntryByDate = (date: string): JournalEntry | null => {
     if (!user) return null;
-    return journalService.getEntryByDate(user.id, date);
+    return entries.find(e => e.date === date) || null;
   };
 
   return {

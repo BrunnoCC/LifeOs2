@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import { useAuthContext } from '../context/AuthContext';
-import { User, Shield, LogOut, Save, Trash2 } from 'lucide-react';
+import { User, Shield, LogOut, Save, Trash2, Database, Cloud } from 'lucide-react';
+import { isSupabaseConfigured } from '../lib/supabase';
 
 export const ProfilePage: React.FC = () => {
   const { user, updateProfile, logout } = useAuthContext();
   const [fullName, setFullName] = useState(user?.full_name || '');
   const [theme] = useState(user?.theme || 'dark');
   const [message, setMessage] = useState<string | null>(null);
+
+  const supabaseActive = isSupabaseConfigured();
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,7 +22,7 @@ export const ProfilePage: React.FC = () => {
   };
 
   const handleResetData = () => {
-    if (window.confirm('Tem certeza que deseja limpar todos os dados salvos localmente? Esta ação não pode ser desfeita.')) {
+    if (window.confirm('Tem certeza que deseja limpar o cache local do navegador?')) {
       localStorage.clear();
       window.location.reload();
     }
@@ -31,7 +34,7 @@ export const ProfilePage: React.FC = () => {
         <h2 className="text-2xl font-bold text-slate-100 flex items-center gap-2">
           <User className="w-6 h-6 text-indigo-400" /> Perfil & Configurações
         </h2>
-        <p className="text-xs text-slate-400 mt-1">Gerencie suas preferências de conta e dados pessoais.</p>
+        <p className="text-xs text-slate-400 mt-1">Gerencie suas preferências de conta e conexão do banco de dados.</p>
       </div>
 
       {message && (
@@ -49,9 +52,15 @@ export const ProfilePage: React.FC = () => {
           <div>
             <h3 className="text-lg font-bold text-slate-100">{user?.full_name || 'Usuário'}</h3>
             <p className="text-xs text-slate-400">{user?.email}</p>
-            <span className="inline-block mt-1 text-[10px] px-2 py-0.5 bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 rounded-full font-semibold">
-              Persistência Local JSON Ativa
-            </span>
+            {supabaseActive ? (
+              <span className="inline-flex items-center gap-1 mt-1 text-[10px] px-2.5 py-0.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full font-semibold">
+                <Cloud className="w-3 h-3" /> Supabase Cloud (PostgreSQL) Ativo
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1 mt-1 text-[10px] px-2.5 py-0.5 bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 rounded-full font-semibold">
+                <Database className="w-3 h-3" /> Modo Offline (LocalStorage)
+              </span>
+            )}
           </div>
         </div>
 
@@ -87,12 +96,16 @@ export const ProfilePage: React.FC = () => {
         </form>
       </div>
 
-      {/* Danger Zone */}
-      <div className="bg-[#0d1627] border border-red-500/20 rounded-2xl p-6 shadow-lg space-y-4">
-        <h3 className="text-sm font-bold text-red-400 flex items-center gap-2">
-          <Shield className="w-4 h-4" /> Zona de Segurança
+      {/* Security & Account Zone */}
+      <div className="bg-[#0d1627] border border-slate-800 rounded-2xl p-6 shadow-lg space-y-4">
+        <h3 className="text-sm font-bold text-slate-200 flex items-center gap-2">
+          <Shield className="w-4 h-4 text-indigo-400" /> Sessão e Armazenamento
         </h3>
-        <p className="text-xs text-slate-400">Você pode redefinir o banco de dados local caso queira zerar o sistema.</p>
+        <p className="text-xs text-slate-400">
+          {supabaseActive
+            ? 'Seus dados estão sincronizados com o banco de dados do Supabase. Você pode encerrar sua sessão ou limpar o cache local.'
+            : 'Os dados estão salvos localmente neste navegador.'}
+        </p>
 
         <div className="flex flex-col sm:flex-row gap-3 pt-2">
           <button
@@ -103,9 +116,9 @@ export const ProfilePage: React.FC = () => {
           </button>
           <button
             onClick={handleResetData}
-            className="flex items-center justify-center gap-2 px-4 py-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-400 rounded-xl text-xs font-semibold"
+            className="flex items-center justify-center gap-2 px-4 py-2 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-rose-400 rounded-xl text-xs font-semibold"
           >
-            <Trash2 className="w-4 h-4" /> Zerar Todos os Dados Locais
+            <Trash2 className="w-4 h-4" /> Limpar Cache Local do Navegador
           </button>
         </div>
       </div>

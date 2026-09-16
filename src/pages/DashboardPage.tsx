@@ -1,15 +1,14 @@
 import React from 'react';
-import { useTasks }   from '../hooks/useTasks';
+import { useTasks } from '../hooks/useTasks';
 import { useRoutines } from '../hooks/useRoutines';
-import { useHabits }  from '../hooks/useHabits';
-import { useGoals }   from '../hooks/useGoals';
+import { useHabits } from '../hooks/useHabits';
+import { useGoals } from '../hooks/useGoals';
 import { useStudies } from '../hooks/useStudies';
 import { useWorkouts } from '../hooks/useWorkouts';
 import { useJournal } from '../hooks/useJournal';
 import {
   CheckSquare, Clock, Flame, Plus, ArrowRight,
   CheckCircle2, Zap, Info, Award,
-  Target, BookOpen, Dumbbell, BookHeart,
 } from 'lucide-react';
 
 interface DashboardPageProps {
@@ -58,11 +57,11 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate, onOpen
   const todayTasks = tasks.filter(t => t.date === today || t.status === 'in_progress' || !t.date);
   const completedTodayTasks = todayTasks.filter(t => t.status === 'completed');
 
-  const totalRoutineItems   = routines.reduce((a, r) => a + r.items.length, 0);
+  const totalRoutineItems = routines.reduce((a, r) => a + r.items.length, 0);
   const completedRoutineItems = routineLogs.length;
 
   const completedHabitsCount = habitsWithStats.filter(h => h.completedToday).length;
-  const habitProgressPct     = habitsWithStats.length > 0
+  const habitProgressPct = habitsWithStats.length > 0
     ? Math.round((completedHabitsCount / habitsWithStats.length) * 100) : 0;
 
   const overallProgressPct = Math.round(
@@ -71,24 +70,24 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate, onOpen
   );
 
   // ── Other module metrics ─────────────────────────────────────────────────────
-  const goalsInProgress   = goals.filter(g => g.status === 'in_progress').length;
-  const goalsAchieved     = goals.filter(g => g.status === 'achieved').length;
+  const goalsInProgress = goals.filter(g => g.status === 'in_progress').length;
+  const goalsAchieved = goals.filter(g => g.status === 'achieved').length;
 
-  const thisWeekStudy     = studySessions.filter(s => {
+  const thisWeekStudy = studySessions.filter(s => {
     const d = new Date(s.date);
     const start = new Date(); start.setDate(start.getDate() - start.getDay());
     return d >= start;
   });
-  const studyHoursWeek    = Math.round(thisWeekStudy.reduce((a, s) => a + s.duration_minutes, 0) / 60 * 10) / 10;
+  const studyHoursWeek = Math.round(thisWeekStudy.reduce((a, s) => a + s.duration_minutes, 0) / 60 * 10) / 10;
 
-  const thisWeekWorkouts  = workoutLogs.filter(l => {
+  const thisWeekWorkouts = workoutLogs.filter(l => {
     const d = new Date(l.date);
     const start = new Date(); start.setDate(start.getDate() - start.getDay());
     return d >= start;
   });
 
-  const todayJournal      = journalEntries.find(e => e.date === today);
-  const journalStreak     = (() => {
+  const todayJournal = journalEntries.find(e => e.date === today);
+  const journalStreak = (() => {
     let streak = 0;
     const d = new Date();
     while (true) {
@@ -253,7 +252,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate, onOpen
             <div className="space-y-2.5 flex-1">
               {todayTasks.slice(0, 5).map((task) => {
                 const subtaskCompleted = task.subtasks?.filter(s => s.completed).length || 0;
-                const totalSubtasks    = task.subtasks?.length || 0;
+                const totalSubtasks = task.subtasks?.length || 0;
                 return (
                   <div
                     key={task.id}
@@ -263,11 +262,10 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate, onOpen
                       <div className="flex items-center gap-3 min-w-0">
                         <button
                           onClick={() => toggleTaskStatus(task.id)}
-                          className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all ${
-                            task.status === 'completed'
-                              ? 'bg-emerald-500 border-emerald-500 text-white'
-                              : 'border-slate-600 hover:border-indigo-400 bg-slate-950'
-                          }`}
+                          className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all ${task.status === 'completed'
+                            ? 'bg-emerald-500 border-emerald-500 text-white'
+                            : 'border-slate-600 hover:border-indigo-400 bg-slate-950'
+                            }`}
                         >
                           {task.status === 'completed' && <CheckCircle2 className="w-3.5 h-3.5" />}
                         </button>
@@ -280,11 +278,10 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate, onOpen
                       </div>
                       <div className="flex items-center gap-2">
                         {task.priority && (
-                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium border shrink-0 ${
-                            task.priority === 'urgent' ? 'bg-red-500/10 text-red-400 border-red-500/20' :
-                            task.priority === 'high'   ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' :
-                            'bg-slate-800 text-slate-400 border-slate-700'
-                          }`}>
+                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium border shrink-0 ${task.priority === 'urgent' ? 'bg-red-500/10 text-red-400 border-red-500/20' :
+                            task.priority === 'high' ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' :
+                              'bg-slate-800 text-slate-400 border-slate-700'
+                            }`}>
                             {task.priority}
                           </span>
                         )}
@@ -345,11 +342,10 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate, onOpen
                     <div className="flex items-center gap-3">
                       <button
                         onClick={() => toggleHabitToday(habit.id)}
-                        className={`w-6 h-6 rounded-lg border flex items-center justify-center transition-all ${
-                          habit.completedToday
-                            ? 'bg-emerald-500 border-emerald-500 text-white shadow-sm shadow-emerald-500/30'
-                            : 'border-slate-700 hover:border-amber-400 bg-slate-950'
-                        }`}
+                        className={`w-6 h-6 rounded-lg border flex items-center justify-center transition-all ${habit.completedToday
+                          ? 'bg-emerald-500 border-emerald-500 text-white shadow-sm shadow-emerald-500/30'
+                          : 'border-slate-700 hover:border-amber-400 bg-slate-950'
+                          }`}
                       >
                         {habit.completedToday && <CheckCircle2 className="w-4 h-4" />}
                       </button>
@@ -434,16 +430,14 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate, onOpen
                       <div
                         key={item.id}
                         onClick={() => toggleItemLog(item.id)}
-                        className={`flex items-center justify-between p-2 rounded-lg cursor-pointer transition-all border text-xs ${
-                          isDone
-                            ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
-                            : 'bg-slate-950 border-slate-800 hover:border-slate-700 text-slate-300'
-                        }`}
+                        className={`flex items-center justify-between p-2 rounded-lg cursor-pointer transition-all border text-xs ${isDone
+                          ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
+                          : 'bg-slate-950 border-slate-800 hover:border-slate-700 text-slate-300'
+                          }`}
                       >
                         <div className="flex items-center gap-2 truncate">
-                          <div className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 ${
-                            isDone ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-slate-700'
-                          }`}>
+                          <div className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 ${isDone ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-slate-700'
+                            }`}>
                             {isDone && <CheckCircle2 className="w-3 h-3" />}
                           </div>
                           <span className="truncate">{item.name}</span>
@@ -457,84 +451,6 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate, onOpen
             ))}
           </div>
         )}
-      </div>
-
-      {/* ── Bottom row: Goals + Studies + Workouts + Journal ── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-
-        {/* Goals */}
-        <button
-          onClick={() => onNavigate('goals')}
-          className="group bg-[#0d1627] border border-slate-800 hover:border-violet-500/40 rounded-2xl p-4 text-left transition-all hover:shadow-lg hover:shadow-violet-500/10 hover:-translate-y-0.5"
-        >
-          <div className="flex items-center justify-between mb-3">
-            <div className="w-8 h-8 rounded-xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center">
-              <Target className="w-4 h-4 text-violet-400" />
-            </div>
-            <ArrowRight className="w-3.5 h-3.5 text-violet-400 opacity-0 group-hover:opacity-100 transition-opacity" />
-          </div>
-          <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Metas</p>
-          <p className="text-2xl font-extrabold text-violet-400 tabular-nums">{goalsInProgress}</p>
-          <p className="text-xs text-slate-600 mt-1">em progresso · {goalsAchieved} concluídas</p>
-          {goals.length > 0 && (
-            <div className="mt-3 h-1 bg-slate-800 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-violet-500 rounded-full transition-all"
-                style={{ width: `${goals.length > 0 ? Math.round((goalsAchieved / goals.length) * 100) : 0}%` }}
-              />
-            </div>
-          )}
-        </button>
-
-        {/* Studies */}
-        <button
-          onClick={() => onNavigate('studies')}
-          className="group bg-[#0d1627] border border-slate-800 hover:border-emerald-500/40 rounded-2xl p-4 text-left transition-all hover:shadow-lg hover:shadow-emerald-500/10 hover:-translate-y-0.5"
-        >
-          <div className="flex items-center justify-between mb-3">
-            <div className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-              <BookOpen className="w-4 h-4 text-emerald-400" />
-            </div>
-            <ArrowRight className="w-3.5 h-3.5 text-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity" />
-          </div>
-          <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Estudos</p>
-          <p className="text-2xl font-extrabold text-emerald-400 tabular-nums">{studyHoursWeek}h</p>
-          <p className="text-xs text-slate-600 mt-1">esta semana · {thisWeekStudy.length} sessões</p>
-        </button>
-
-        {/* Workouts */}
-        <button
-          onClick={() => onNavigate('workouts')}
-          className="group bg-[#0d1627] border border-slate-800 hover:border-rose-500/40 rounded-2xl p-4 text-left transition-all hover:shadow-lg hover:shadow-rose-500/10 hover:-translate-y-0.5"
-        >
-          <div className="flex items-center justify-between mb-3">
-            <div className="w-8 h-8 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center">
-              <Dumbbell className="w-4 h-4 text-rose-400" />
-            </div>
-            <ArrowRight className="w-3.5 h-3.5 text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity" />
-          </div>
-          <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Treinos</p>
-          <p className="text-2xl font-extrabold text-rose-400 tabular-nums">{thisWeekWorkouts.length}</p>
-          <p className="text-xs text-slate-600 mt-1">sessões esta semana</p>
-        </button>
-
-        {/* Journal */}
-        <button
-          onClick={() => onNavigate('journal')}
-          className="group bg-[#0d1627] border border-slate-800 hover:border-fuchsia-500/40 rounded-2xl p-4 text-left transition-all hover:shadow-lg hover:shadow-fuchsia-500/10 hover:-translate-y-0.5"
-        >
-          <div className="flex items-center justify-between mb-3">
-            <div className="w-8 h-8 rounded-xl bg-fuchsia-500/10 border border-fuchsia-500/20 flex items-center justify-center">
-              <BookHeart className="w-4 h-4 text-fuchsia-400" />
-            </div>
-            <ArrowRight className="w-3.5 h-3.5 text-fuchsia-400 opacity-0 group-hover:opacity-100 transition-opacity" />
-          </div>
-          <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Diário</p>
-          <p className="text-2xl font-extrabold text-fuchsia-400 tabular-nums">
-            {journalStreak > 0 ? `${journalStreak}d` : '—'}
-          </p>
-          <p className="text-xs text-slate-600 mt-1">{todayJournal ? '✓ Escrito hoje' : 'Sem entrada hoje'}</p>
-        </button>
       </div>
 
     </div>
