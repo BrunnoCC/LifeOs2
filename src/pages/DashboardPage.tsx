@@ -158,7 +158,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate, onOpen
 
       {/* ── All-modules mini cards ── */}
       <div>
-        <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-widest mb-3">Visão Geral do LifeOS</p>
+        <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-widest mb-3">Visão Geral do LifeDocs</p>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
           <NavCard
             emoji="✅"

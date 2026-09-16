@@ -37,7 +37,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({ onSwitchToLogin }) =
   return (
     <div>
       <h2 className="text-xl font-bold text-slate-100 mb-1">Criar sua conta</h2>
-      <p className="text-xs text-slate-400 mb-6">Inicialize seu sistema pessoal LifeOS em segundos.</p>
+      <p className="text-xs text-slate-400 mb-6">Inicialize seu sistema pessoal LifeDocs em segundos.</p>
 
       {error && (
         <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-xs text-red-400">

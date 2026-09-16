@@ -13,7 +13,7 @@ export const AuthLayout: React.FC<{ children: React.ReactNode }> = ({ children }
           <Compass className="w-6 h-6 text-indigo-400" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-slate-100 tracking-tight">LifeOS</h1>
+          <h1 className="text-2xl font-bold text-slate-100 tracking-tight">LifeDocs</h1>
           <p className="text-xs text-slate-400">Painel Pessoal de Organização</p>
         </div>
       </div>
@@ -25,7 +25,7 @@ export const AuthLayout: React.FC<{ children: React.ReactNode }> = ({ children }
 
       {/* Footer Note */}
       <p className="text-xs text-slate-500 mt-8">
-        LifeOS &copy; {new Date().getFullYear()} — Todos os seus dados salvos localmente no seu dispositivo.
+        LifeDocs &copy; {new Date().getFullYear()} — Seu sistema pessoal de gestão e produtividade.
       </p>
     </div>
   );

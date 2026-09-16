@@ -8,7 +8,7 @@ interface LoginPageProps {
 
 export const LoginPage: React.FC<LoginPageProps> = ({ onSwitchToRegister }) => {
   const { login } = useAuthContext();
-  const [email, setEmail] = useState('brunno@lifeos.com');
+  const [email, setEmail] = useState('brunno@lifedocs.com');
   const [password, setPassword] = useState('123456');
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -35,7 +35,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onSwitchToRegister }) => {
 
   return (
     <div>
-      <h2 className="text-xl font-bold text-slate-100 mb-1">Entrar no LifeOS</h2>
+      <h2 className="text-xl font-bold text-slate-100 mb-1">Entrar no LifeDocs</h2>
       <p className="text-xs text-slate-400 mb-6">Acesse seu painel pessoal de rotina e produtividade.</p>
 
       {error && (

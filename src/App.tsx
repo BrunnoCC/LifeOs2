@@ -25,7 +25,7 @@ const AppContent: React.FC = () => {
       <div className="min-h-screen bg-[#081425] flex items-center justify-center text-slate-400 text-xs">
         <div className="flex items-center gap-2">
           <div className="w-4 h-4 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
-          <span>Carregando LifeOS...</span>
+          <span>Carregando LifeDocs...</span>
         </div>
       </div>
     );

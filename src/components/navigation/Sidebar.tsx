@@ -45,7 +45,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onSelectTab }) => 
             <Compass className="w-5 h-5 text-indigo-400" />
           </div>
           <div>
-            <h1 className="text-lg font-bold text-slate-100 tracking-tight leading-none">LifeOS</h1>
+            <h1 className="text-lg font-bold text-slate-100 tracking-tight leading-none">LifeDocs</h1>
             <span className="text-[10px] text-slate-400 font-medium tracking-wider uppercase">Painel Pessoal</span>
           </div>
         </div>
