@@ -7,9 +7,11 @@ interface AuthContextType {
   user: UserProfile | null;
   loading: boolean;
   login: (email: string, pass: string) => Promise<{ user: UserProfile | null; error: string | null }>;
+  loginWithGoogle: () => Promise<{ error: string | null }>;
   register: (email: string, pass: string, name: string) => Promise<{ user: UserProfile | null; error: string | null }>;
   logout: () => Promise<void>;
   updateProfile: (updates: Partial<UserProfile>) => Promise<void>;
+  resetPassword: (email: string) => Promise<{ error: string | null; successMessage: string | null }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -63,6 +65,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return res;
   };
 
+  const loginWithGoogle = async () => {
+    const res = await authService.loginWithGoogle();
+    if (!isSupabaseConfigured()) {
+      const currentUser = await authService.getCurrentUser();
+      if (currentUser) setUser(currentUser);
+    }
+    return res;
+  };
+
   const register = async (email: string, pass: string, name: string) => {
     const res = await authService.register(email, pass, name);
     if (res.user) setUser(res.user);
@@ -79,8 +90,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (updated) setUser(updated);
   };
 
+  const resetPassword = async (email: string) => {
+    return await authService.resetPassword(email);
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout, updateProfile }}>
+    <AuthContext.Provider value={{ user, loading, login, loginWithGoogle, register, logout, updateProfile, resetPassword }}>
       {children}
     </AuthContext.Provider>
   );

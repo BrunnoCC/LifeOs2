@@ -14,6 +14,9 @@ export const authService = {
       const { data: { user }, error } = await supabase.auth.getUser();
       if (error || !user) return null;
 
+      const metadataName = user.user_metadata?.full_name || user.user_metadata?.name;
+      const metadataAvatar = user.user_metadata?.avatar_url || user.user_metadata?.picture;
+
       const { data: profile } = await supabase
         .from('profiles')
         .select('*')
@@ -24,8 +27,8 @@ export const authService = {
         return {
           id: profile.id,
           email: user.email || '',
-          full_name: profile.full_name || user.email?.split('@')[0] || 'Usuário',
-          avatar_url: profile.avatar_url,
+          full_name: profile.full_name || metadataName || user.email?.split('@')[0] || 'Usuário',
+          avatar_url: profile.avatar_url || metadataAvatar,
           theme: profile.theme || 'system',
           accent_color: profile.accent_color || '#6366f1',
           enabled_widgets: profile.enabled_widgets || ['today', 'daily_progress', 'habits', 'routines', 'studies', 'focus'],
@@ -33,19 +36,69 @@ export const authService = {
         };
       }
 
-      // Default profile structure if table fetch fails
-      return {
+      const fallbackProfile: UserProfile = {
         id: user.id,
         email: user.email || '',
-        full_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Usuário',
+        full_name: metadataName || user.email?.split('@')[0] || 'Usuário',
+        avatar_url: metadataAvatar,
         theme: 'system',
         accent_color: '#6366f1',
         enabled_widgets: ['today', 'daily_progress', 'habits', 'routines', 'studies', 'focus'],
         created_at: new Date().toISOString()
       };
+
+      try {
+        await supabase.from('profiles').upsert({
+          id: user.id,
+          full_name: fallbackProfile.full_name,
+          avatar_url: fallbackProfile.avatar_url,
+          theme: 'system',
+          accent_color: '#6366f1',
+          enabled_widgets: fallbackProfile.enabled_widgets
+        }, { onConflict: 'id' });
+      } catch (e) {
+        console.warn('Could not auto-create profile:', e);
+      }
+
+      return fallbackProfile;
     } catch (err) {
       console.error('Error in getCurrentUser:', err);
       return null;
+    }
+  },
+
+  async loginWithGoogle(): Promise<{ error: string | null }> {
+    if (!isSupabaseConfigured()) {
+      initializeDatabaseIfNeeded();
+      const googleUser: UserProfile = {
+        id: `user-google-${Date.now()}`,
+        email: 'usuario.google@gmail.com',
+        full_name: 'Usuário Google',
+        avatar_url: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=150',
+        theme: 'dark',
+        accent_color: '#6366f1',
+        enabled_widgets: ['today', 'daily_progress', 'habits', 'routines', 'studies', 'focus'],
+        created_at: new Date().toISOString()
+      };
+      setStorageItem(STORAGE_KEYS.CURRENT_USER, googleUser);
+      return { error: null };
+    }
+
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: window.location.origin
+        }
+      });
+
+      if (error) {
+        return { error: error.message };
+      }
+
+      return { error: null };
+    } catch (err: any) {
+      return { error: err.message || 'Erro ao conectar com a conta do Google.' };
     }
   },
 
@@ -195,5 +248,25 @@ export const authService = {
     }
 
     return { ...current, ...updates };
+  },
+
+  async resetPassword(email: string): Promise<{ error: string | null; successMessage: string | null }> {
+    if (!isSupabaseConfigured()) {
+      return { error: null, successMessage: 'Enviamos as instruções de redefinição para seu e-mail.' };
+    }
+
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin
+      });
+
+      if (error) {
+        return { error: error.message, successMessage: null };
+      }
+
+      return { error: null, successMessage: 'Instruções de redefinição enviadas para o seu e-mail com sucesso!' };
+    } catch (err: any) {
+      return { error: err.message || 'Erro ao enviar e-mail de redefinição.', successMessage: null };
+    }
   }
 };
